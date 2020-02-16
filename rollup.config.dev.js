@@ -3,8 +3,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import serve from 'rollup-plugin-serve';
 import typescript from 'rollup-plugin-typescript2';
-import copy from "rollup-plugin-copy-assets";
-
+import copy from 'rollup-plugin-copy';
 
 export default {
 
@@ -26,10 +25,15 @@ export default {
     },
 
     plugins: [
-
         copy({
-            assets: [
-                "./src/assets"
+            targets: [{
+                    src: 'src/index.html',
+                    dest: 'dist'
+                },
+                {
+                    src: 'assets/**/*',
+                    dest: 'dist/assets'
+                }
             ]
         }),
 
@@ -65,7 +69,7 @@ export default {
         typescript({
             typescript: require('typescript'),
             objectHashIgnoreUnknownHack: true,
-          }),
+        }),
 
         //  See https://www.npmjs.com/package/rollup-plugin-serve for config options
         serve({
