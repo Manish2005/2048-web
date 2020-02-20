@@ -38,5 +38,6 @@ export const GameOptions = {
         32768: 0xFF1111,
         65536: 0xFF0000
     },
+    boardSize: 4,
     tweenSpeed: 50
 }

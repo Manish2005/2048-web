@@ -8,6 +8,7 @@ export default class Demo extends Phaser.Scene {
     fieldGroup: Phaser.GameObjects.Group;
     canMove: boolean;
     movingTiles: number;
+    size = GameOptions.boardSize;
 
     constructor() {
         super('demo');
@@ -38,9 +39,9 @@ export default class Demo extends Phaser.Scene {
 
     createGameBoard() {
         this.fieldGroup = this.add.group();
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < this.size; i++) {
             this.fieldArray[i] = [];
-            for (let j = 0; j < 4; j++) {
+            for (let j = 0; j < this.size; j++) {
                 const rowPosition = Tile.getTilePosition(i);
                 const colPosition = Tile.getTilePosition(j);
                 const two = this.add.sprite(colPosition, rowPosition, "tile");
@@ -124,10 +125,10 @@ export default class Demo extends Phaser.Scene {
         this.canMove = false;
         let somethingMoved = false;
         this.movingTiles = 0;
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                let colToWatch = deltaCol == 1 ? (4 - 1) - j : j;
-                let rowToWatch = deltaRow == 1 ? (4 - 1) - i : i;
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                let colToWatch = deltaCol == 1 ? (this.size - 1) - j : j;
+                let rowToWatch = deltaRow == 1 ? (this.size - 1) - i : i;
                 const tileValue = this.fieldArray[rowToWatch][colToWatch].tileValue;
                 if (tileValue != 0) {
                     let colSteps = deltaCol;
@@ -203,8 +204,8 @@ export default class Demo extends Phaser.Scene {
 
 const config = {
     type: Phaser.AUTO,
-    width: GameOptions.tileSize * 4,
-    height: GameOptions.tileSize * 4,
+    width: GameOptions.tileSize * GameOptions.boardSize,
+    height: GameOptions.tileSize * GameOptions.boardSize,
     backgroundColor: GameOptions.backgroundColor,
     scene: Demo
 };

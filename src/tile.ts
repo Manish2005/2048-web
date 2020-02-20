@@ -2,7 +2,7 @@ import { GameOptions } from './util';
 
 export class Tile {
     static isInsideBoard(row: number, col: number) {
-        return (row >= 0) && (col >= 0) && (row < 4) && (col < 4);
+        return (row >= 0) && (col >= 0) && (row < GameOptions.boardSize) && (col < GameOptions.boardSize);
     }
 
     /**
@@ -14,8 +14,8 @@ export class Tile {
     }
 
     static resetTiles(fieldArray) {
-        for (var i = 0; i < 4; i++) {
-            for (var j = 0; j < 4; j++) {
+        for (var i = 0; i < GameOptions.boardSize; i++) {
+            for (var j = 0; j < GameOptions.boardSize; j++) {
                 const tile = fieldArray[i][j];
                 tile.canUpgrade = true;
                 tile.tileSprite.x = tile.tileText.x = Tile.getTilePosition(j);
