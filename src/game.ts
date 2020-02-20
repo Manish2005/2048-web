@@ -13,20 +13,41 @@ export default class Demo extends Phaser.Scene {
         super('demo');
     }
 
+    /**
+     * Load needed assets
+     */
     preload() {
         this.load.image("tile", "./assets/tile.png");
     }
 
+    /**
+     * Create first scene
+     */
     create() {
+        this.createGameBoard();
+        window.focus();
+        GameUtil.resize(config);
+        window.addEventListener("resize", () => {
+            GameUtil.resize(config)
+        }, false);
+        this.input.keyboard.on("keydown", this.handleKey, this);
+        this.canMove = false;
+        this.createNewTile();
+        this.createNewTile();
+    }
+
+    createGameBoard() {
         this.fieldGroup = this.add.group();
-        for (var i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
             this.fieldArray[i] = [];
-            for (var j = 0; j < 4; j++) {
-                var two = this.add.sprite(Tile.getTilePosition(j), Tile.getTilePosition(i), "tile");
+            for (let j = 0; j < 4; j++) {
+                const rowPosition = Tile.getTilePosition(i);
+                const colPosition = Tile.getTilePosition(j);
+                const two = this.add.sprite(colPosition, rowPosition, "tile");
                 two.alpha = 0;
                 two.visible = false;
                 this.fieldGroup.add(two);
-                var text = this.add.text(Tile.getTilePosition(j), Tile.getTilePosition(i), "2", {
+                const text = this.add.text(colPosition, rowPosition, "2", {
                     font: "bold 64px Arial",
                     color: "black",
                     align: "center"
@@ -43,24 +64,18 @@ export default class Demo extends Phaser.Scene {
                 }
             }
         }
-        window.focus()
-        GameUtil.resize(config);
-        window.addEventListener("resize", () => { GameUtil.resize(config) }, false);
-        this.input.keyboard.on("keydown", this.handleKey, this);
-        this.canMove = false;
-        this.createNewTile();
-        this.createNewTile();
     }
 
     createNewTile() {
-        var emptyTiles = [];
-        for (var row = 0; row < 4; row++) {
-            for (var col = 0; col < 4; col++) {
-                if (this.fieldArray[row][col].tileValue == 0) {
-                    emptyTiles.push({ row, col })
+        const emptyTiles = [];
+        this.fieldArray.forEach((row, rowIdx) => {
+            row.forEach((item, colIdx) => {
+                if (item.tileValue == 0) {
+                    emptyTiles.push({ row: rowIdx, col: colIdx })
                 }
-            }
-        }
+            });
+        });
+
         const chosenTile = Phaser.Utils.Array.GetRandom(emptyTiles);
         const tile = this.fieldArray[chosenTile.row][chosenTile.col];
         tile.tileValue = 2;
@@ -79,34 +94,26 @@ export default class Demo extends Phaser.Scene {
 
     handleKey(e) {
         if (this.canMove) {
-            var children = this.fieldGroup.getChildren() as any;
+            let children = this.fieldGroup.getChildren() as any[];
             switch (e.code) {
                 case "KeyA":
                 case 'ArrowLeft':
-                    for (var i = 0; i < children.length; i++) {
-                        children[i].depth = children[i].x;
-                    }
+                    children = children.map(item => item.depth = item.x);
                     this.handleMove(0, -1);
                     break;
                 case "KeyD":
                 case 'ArrowRight':
-                    for (var i = 0; i < children.length; i++) {
-                        children[i].depth = config.width - children[i].x;
-                    }
+                    children = children.map(item => item.depth = config.width = item.x);
                     this.handleMove(0, 1);
                     break;
                 case "KeyW":
                 case 'ArrowUp':
-                    for (var i = 0; i < children.length; i++) {
-                        children[i].depth = children[i].y;
-                    }
+                    children = children.map(item => item.depth = item.y);
                     this.handleMove(-1, 0);
                     break;
                 case "KeyS":
                 case 'ArrowDown':
-                    for (var i = 0; i < children.length; i++) {
-                        children[i].depth = config.height - children[i].y;
-                    }
+                    children = children.map(item => item.depth = config.height - item.y);
                     this.handleMove(1, 0);
                     break;
             }
@@ -115,16 +122,16 @@ export default class Demo extends Phaser.Scene {
 
     handleMove(deltaRow, deltaCol) {
         this.canMove = false;
-        var somethingMoved = false;
+        let somethingMoved = false;
         this.movingTiles = 0;
-        for (var i = 0; i < 4; i++) {
-            for (var j = 0; j < 4; j++) {
-                var colToWatch = deltaCol == 1 ? (4 - 1) - j : j;
-                var rowToWatch = deltaRow == 1 ? (4 - 1) - i : i;
-                var tileValue = this.fieldArray[rowToWatch][colToWatch].tileValue;
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                let colToWatch = deltaCol == 1 ? (4 - 1) - j : j;
+                let rowToWatch = deltaRow == 1 ? (4 - 1) - i : i;
+                const tileValue = this.fieldArray[rowToWatch][colToWatch].tileValue;
                 if (tileValue != 0) {
-                    var colSteps = deltaCol;
-                    var rowSteps = deltaRow;
+                    let colSteps = deltaCol;
+                    let rowSteps = deltaRow;
                     while (Tile.isInsideBoard(rowToWatch + rowSteps, colToWatch + colSteps) && this.fieldArray[rowToWatch + rowSteps][colToWatch + colSteps].tileValue == 0) {
                         colSteps += deltaCol;
                         rowSteps += deltaRow;
@@ -198,7 +205,7 @@ const config = {
     type: Phaser.AUTO,
     width: GameOptions.tileSize * 4,
     height: GameOptions.tileSize * 4,
-    backgroundColor: 0x444444,
+    backgroundColor: GameOptions.backgroundColor,
     scene: Demo
 };
 

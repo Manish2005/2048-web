@@ -18,6 +18,7 @@ export class GameUtil {
 
 export const GameOptions = {
     tileSize: 200,
+    backgroundColor: 0x444444,
     colors: {
         0: 0xFFFFFF,
         2: 0xFFFFFF,
